@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div>
+    <h1 class="text-center">
+      Skittish - Repository of Reports
+    </h1>
+  </div>    
+  <div>
+    <!-- Alert Messages -->
+    {% include "alert.html" %}
+  </div>
+  <div class="centered">
+    <div class="row">
+      <div class="document-editor__toolbar"></div>
+    </div>
+    <div class="row row-editor">
+      <div class="editor-container">
+        <div class="editor">
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

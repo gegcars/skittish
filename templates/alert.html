@@ -1,0 +1,27 @@
+
+{% block content %}
+  <!-- <main class="form-signin w-100 m-auto"> -->
+  {% set type = 'alert-success' %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+  {% if messages[0][0] == 'error' %}
+    {% set type = 'alert-danger' %}
+  {% elif messages[0][0] == 'warning' %}
+    {% set type = 'alert-warning' %}
+  {% endif %}
+    <div class="alert {{type}} alert-dismissible fade show" role="alert">  
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      {{messages[0][1]}}
+    </div>
+  {% endif %}
+  {% endwith %}
+  {% if errors %}
+  {% for key in errors %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">  
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          {{ key }} - {{ errors[key][0] }}
+    </div>
+  {% endfor %}
+  {% endif %}
+  <!-- </main> -->
+{% endblock %}

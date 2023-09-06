@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if is_table %}
+<div class="container" style="width: 100%; overflow-x:scroll;">
+  <div class="container text-center">
+    <div>
+      <!-- Alert Messages -->
+      {% include "alert.html" %}
+    </div>
+    <div class="mb-3">
+      <h1>Files</h1>
+    </div>
+  </div>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+    <div class="container-fluid">
+      <form name="upload" class="d-flex center" method="POST" role="file" action="/file/upload">
+        <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="mb-3">
+          <label for="formFileMultiple" class="form-label">Choose File to Upload</label>
+          <input id="fileupload" name="file" class="form-control" type="file" id="formFileMultiple" 
+          data-show-caption="true" onchange="addToFileList(this)" multiple>
+          <button id="filesubmit" type="button" onclick="uploadAllFiles(this)" class="btn btn-primary mt-3">Upload All Files</button>
+          <button id="fileremove" type="button" onclick="removeUploadedFiles(this)" class="btn btn-primary mt-3">Remove Uploaded Files</button>
+        </div>
+        <!-- File Upload Table -->
+        <table class="file_table" style="margin-left: 50px;">
+          <tbody></tbody>
+        </table>
+        <!----------------------->
+      </form>
+    </div>
+  </nav>
+  {% include "_file_table.html" %}  
+</div>  
+{% else %}
+{# This is for the File Information view for non-delete actions #}
+{% if action != 'delete' %}
+<div id="fileinfo_side" style="float: left; width:40%; margin-right: 5px; overflow-x:hidden;">
+  <div class="container text-center">
+    <div>
+      <!-- Alert Messages -->
+      {% include "alert.html" %}
+    </div>
+  </div>
+  <div>
+    <h1 class="title text-center">
+      View
+    </h1>
+  </div>
+  <form name="fileform" >
+    <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <input type="hidden" name="id" value="{{form.id.data}}" />
+    <input type="hidden" name="filename" value="{{form.filename.data}}" />
+    <input type="hidden" name="filesize" value="{{form.filesize.data}}" />
+    <input type="hidden" name="md5" value="{{form.md5.data}}" />
+    <input type="hidden" name="sha1" value="{{form.sha1.data}}" />
+    <input type="hidden" name="sha256" value="{{form.sha256.data}}" />
+    <input type="hidden" name="sha512" value="{{form.sha512.data}}" />
+    <input type="hidden" name="services" value="{{form.file_services.data}}" />
+    <table>
+      <tbody>
+        <tr>
+          <td><strong>Filename</strong>:</td>
+          <td style="padding: 10px;">{{form.filename.data}}</td>
+        </tr>
+        <tr>
+          <td><strong>Filesize</strong>:</td>
+          <td style="padding: 10px;">{{form.filesize.data}} bytes</td>
+        </tr>
+        <tr>
+          <td><strong>MD5</strong>:</td>
+          <td style="padding: 5px;">
+            <span style="word-break:break-all;">
+              {{form.md5.data}}
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>SHA1</strong>:</td>
+          <td style="padding: 5px;">
+            <span style="word-break:break-all;">
+              {{form.sha1.data}}
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>SHA256</strong>:</td>
+          <td style="padding: 5px;">
+            <span style="word-break:break-all;">
+              {{form.sha256.data}}
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>SHA512</strong>:</td>
+          <td style="padding: 5px;">
+            <span style="word-break:break-all;">
+              {{form.sha512.data}}
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Available Services</strong>:</td>
+          <td>
+            {% for s in form.file_services.data %}
+              <button class="btn btn-sm btn-outline-success" type="button"
+              onclick='getFileServiceByHash("{{s}}", "{{form.sha256.data}}")'>{{s}}</button>&nbsp;
+            {% endfor %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+  <div class="dropdown" style="margin-top: 20px;">
+    <strong>Send To</strong>:
+    <button class="btn btn-sm btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Services
+    </button>
+    <ul class="dropdown-menu">
+      {% for service in available_services %}
+        <button class="dropdown-item" onclick='getFileServiceByHash("{{service}}", "{{form.sha256.data}}")'>{{service}}</button>
+      {% endfor %}
+    </ul>
+  </div>
+  <div id="file_service_info" style="margin-top: 20px;">
+    
+  </div>
+</div>
+<div class="b-example-divider b-example-vr"></div>
+{# This is the Report view panel #}
+<div id="view_side" style="float: left; width:60%; overflow-x:hidden;"> 
+  <div id="view_side_alert_panel" class="container text-center">
+  </div>
+  <nav id="ck-content-buttons" class="navbar navbar-expand-lg bg-body-tertiary mb-3 justify-content-md-center">
+  </nav>
+  <div id="ck-content" class="ck-content"></div> 
+</div>
+{# This is for File Information view for delete action #}
+{% else %}
+<div class="container" style="width: 100%; overflow-x:scroll;">
+  <div id="left-side" style="float: left; width:20%;">&nbsp;</div>
+  <div id="middle" style="float: left; width:60%;">
+    <div class="container text-center">
+      <div>
+        <!-- Alert Messages -->
+        {% include "alert.html" %}
+      </div>
+      <div class="container text-center" style="margin-bottom: 30px;">
+        <h1>File Information</h1>
+      </div>
+    </div>    
+    <form class="container-fluid" method="post" action="/file/{{action}}/{{form.id.data}}">
+      <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">Id</span>
+        </div>
+        <input type="text" name="id" class="form-control" id="exampleFormControlInput1" placeholder="Id" 
+        value="{{form.id.data}}" aria-label="Id" aria-describedby="basic-addon1" readonly>
+      </div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">Filename</span>
+        </div>
+        <input type="text" name="filename" class="form-control" id="exampleFormControlInput1"  placeholder="Filename" 
+        value="{{form.filename.data}}" aria-label="filename" aria-describedby="basic-addon1" readonly>
+      </div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">Filesize</span>
+        </div>
+        <input type="text" name="filesize" class="form-control" id="exampleFormControlInput1" placeholder="Filesize" 
+        value="{{form.filesize.data}}" aria-label="filesize" aria-describedby="basic-addon1" readonly>
+      </div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">MD5</span>
+        </div>
+        <input type="text" name="md5" class="form-control" id="exampleFormControlInput1" placeholder="MD5" 
+        value="{{form.md5.data}}" aria-label="md5" aria-describedby="basic-addon1" readonly>
+      </div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">SHA1</span>
+        </div>
+        <input type="text" name="sha1" class="form-control" id="exampleFormControlInput1" placeholder="SHA1" 
+        value="{{form.sha1.data}}" aria-label="sha1" aria-describedby="basic-addon1" readonly>
+      </div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">SHA256</span>
+        </div>
+        <input type="text" name="sha256" class="form-control" id="exampleFormControlInput1" placeholder="SHA256" 
+        value="{{form.sha256.data}}" aria-label="sha256" aria-describedby="basic-addon1" readonly>
+      </div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">SHA512</span>
+        </div>
+        <input type="text" name="sha512" class="form-control" id="exampleFormControlInput1" placeholder="SHA512" 
+        value="{{form.sha512.data}}" aria-label="sha512" aria-describedby="basic-addon1" readonly>
+      </div>
+      <button class="btn btn-danger w-100 py-2 mt-3" type="submit">Delete File</button>
+    </form>
+  </div>
+  <div id="right-side" style="float: left; width:20%;">&nbsp;</div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

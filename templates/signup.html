@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="the-whole-thing" style="height:100%; width:100%;">
+  <div id="content-left" style="float: left; width:25%;">&nbsp;</div>
+  <div id="content-middle" style="float: left; width:50%; ">
+    <div>
+      <h1 class="text-center">
+        &nbsp;
+      </h1>
+    </div>
+    <div>
+      <!-- Alert Messages -->
+      {% include "alert.html" %}
+    </div>
+    <form method="post" action="/signup">
+      <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <h1 class="h3 mb-3 fw-normal">Create Account</h1>
+      <div class="form-floating mb-4">
+          <input type="email" name="email" class="form-control" id="floatingInput" placeholder="add email address" 
+          {% if form.email.data %}
+            value={{form.email.data}}
+          {% endif %}
+          >
+          <label for="floatingInput">Email address</label>
+        </div>
+      <div class="form-floating mb-4">
+        <input type="text" name="name" class="form-control" id="floatingInput" placeholder="add name" 
+        {% if form.name.data %}
+          value={{form.name.data}}
+        {% endif %}
+        >
+        <label for="floatingInput">Name</label>
+      </div>
+      <div class="form-floating mb-4">
+        <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password">
+        <label for="floatingPassword">Password</label>
+        <span class="password-info mt-2">Use 8 or more characters with a mix of letters, numbers & symbols.</span>
+      </div>
+      <div class="form-floating mb-4">
+          <input type="password" name="confirm_password" class="form-control" id="floatingPassword" placeholder="Password">
+          <label for="floatingPassword">Confirm Password</label>
+      </div>
+      <button class="btn btn-primary w-100 py-2" type="submit">Create</button>
+      <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2023</p>
+    </form>
+  </div>
+  <div id="content-right" style="float: left; width:25%; "></div>
+</div>
+{% endblock %}

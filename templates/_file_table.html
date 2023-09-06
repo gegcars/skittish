@@ -1,0 +1,146 @@
+{% block file_table %}
+<nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+  <div class="container-fluid">
+    <form name="search" class="d-flex center" method="POST" role="search" action="/file/search">
+      <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input id="search" class="form-control me-2" type="search" name="search" style="width: 570px;" 
+      placeholder="SHA256 or Filename" aria-label="Search"
+      {% if form.search.data %}
+      value="{{form.search.data}}"
+      {% endif %}
+      >
+      <select class="form-select me-2" style="width:170px;" name="item_per_page" aria-label="Item per page select">
+        <option>Items per page</option>
+        {% for i in range(5) %}
+          {% if table.per_page == i+1 %}
+          <option value="{{i+1}}" selected>{{i+1}} Items per page</option>
+          {% else %}
+          <option value="{{i+1}}">{{i+1}} Items per page</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+      <button class="btn btn-outline-success" type="submit" style="margin-right: 3px;">Search</button>
+      <a href="{{url_for('file.index')}}" class="btn btn-outline-success" role="button">Show All</a>
+    </form>
+  </div>
+</nav>
+{% if table %}
+<div style="overflow-x: auto;">
+  <nav aria-label="File pagination Top">
+    <ul class="pagination">
+      {% if table.has_prev %}
+      <li class="page-item"><a class="page-link" href="/file/search/{{table.page-1}}">Previous</a></li>
+      {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+      {% endif %}
+      {% for page in table.iter_pages() %}
+        {% if page %}
+          {% if page != table.page %}
+            <li class="page-item"><a class="page-link" href="/file/search/{{page}}">{{page}}</a></li>
+          {% else %}
+            <li class="page-item active"><a class="page-link" href="#">{{page}}</a></li>
+          {% endif %}
+        {% else %}
+          <span class="ellipsis">...</span>
+        {% endif %}
+      {% endfor %}
+      {% if table.has_next %}
+      <li class="page-item"><a class="page-link" href="/file/search/{{table.page+1}}">Next</a></li>
+      {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+      {% endif %}
+      <div class="dropdown">
+        <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Items per page
+        </button>
+        <ul class="dropdown-menu">
+          {% for i in range(5) %}
+              {% if i == 0 %}
+              <li><a class="dropdown-item" href="/file/search/1/{{i+1}}">{{i+1}} Item per page</a></li>
+              {% else %}
+              <li><a class="dropdown-item" href="/file/search/1/{{i+1}}">{{i+1}} Items per page</a></li>
+              {% endif %}
+            {% endfor %}
+        </ul>
+      </div>
+      <li class="page-item"><a class="page-link">Total Items: {{table.total}}</a></li>
+    </ul>
+    <!-- <ul class="pagination">
+      <li class="page-item"><a class="page-link">Total Items: {{table.total}}</a></li>
+    </ul> -->
+  </nav>
+  <table class="table table-striped">
+    <!-- Table Heading -->
+    <thead class="text-center">
+      <tr>
+        <th>Id</th>
+        <th>Filename</th>
+        <th>SHA256</th>        
+        <th>Uploaded By</th>
+        <th>Upload Date</th>        
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody class="text-center">
+    <!-- On Rows -->
+      {% for file in table %}
+      <tr>
+        <td>{{file.id}}</td>
+        <td class="tbltdEllipsis">{{file.filename}}</td>
+        <td class="tbltdEllipsis"><a href="/file/view/{{file.id}}">{{file.sha256}}</a></td>
+        <td>{{file.user_id}}</td>
+        <td>{{file.upload_date}}</td>
+        <td>
+          <a class="link-offset-2 link-underline link-underline-opacity-0" href="/file/view/{{file.id}}">
+            <i class="bi-eye text-decoration-none" style="font-size: 1em; color: cornflowerblue;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+              </svg>
+            </i>
+          </a>
+          <a class="link-offset-2 link-underline link-underline-opacity-0" href="/file/delete/{{file.id}}">
+            <i class="bi-trash text-decoration-none" style="font-size: 1em; color: cornflowerblue;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+              </svg>
+            </i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <nav aria-label="File pagination Bottom">
+    <ul class="pagination">
+      {% if table.has_prev %}
+      <li class="page-item"><a class="page-link" href="/file/search/{{table.page-1}}">Previous</a></li>
+      {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+      {% endif %}
+      {% for page in table.iter_pages() %}
+        {% if page %}
+          {% if page != table.page %}
+            <li class="page-item"><a class="page-link" href="/file/search/{{page}}">{{page}}</a></li>
+          {% else %}
+            <li class="page-item active"><a class="page-link" href="#">{{page}}</a></li>
+          {% endif %}
+        {% else %}
+          <span class="ellipsis">...</span>
+        {% endif %}
+      {% endfor %}
+      {% if table.has_next %}
+      <li class="page-item"><a class="page-link" href="/file/search/{{table.page+1}}">Next</a></li>
+      {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% else %}
+<div class="container justify-content-md-center" style="text-align: center;width:100%;">
+  <h1>No Result</h1>
+</div>
+{% endif %}
+{% endblock %}

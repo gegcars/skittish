@@ -1,0 +1,7 @@
+
+Flask
+flask-sqlalchemy
+flask-login
+flask-admin
+Flask-WTF
+pdfkit

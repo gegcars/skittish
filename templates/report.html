@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="width: 100%; overflow-x:hidden;">
+  <div>
+    <!-- Alert Messages -->
+    {% include "alert.html" %}
+  </div>
+  {% if is_table %} {# This is to display Report that does not have ownership yet #}
+  <div class="container-fluid justify-content-md-center">
+    <div class="text-center">
+      <h1>Reports</h1>
+    </div>
+  </div>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+    <div class="container-fluid">
+      <form name="search" class="d-flex center" method="POST" role="search" action="/report/search">
+        <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input id="search" class="form-control me-2" type="search" name="search" style="width: 570px;" 
+        placeholder="SHA256" aria-label="Search"
+        {% if form.search.data %}
+        value="{{form.search.data}}"
+        {% endif %}
+        >
+        <select class="form-select me-2" style="width:170px;" name="item_per_page" aria-label="Item per page select">
+          <option>Items per page</option>
+          {% for i in range(5) %}
+            {% if table.per_page == i+1 %}
+            <option value="{{i+1}}" selected>{{i+1}} Items per page</option>
+            {% else %}
+            <option value="{{i+1}}">{{i+1}} Items per page</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        <button class="btn btn-outline-success" type="submit" style="margin-right: 3px;">Search</button>
+        <a href="/report" class="btn btn-outline-success" role="button">Show All</a>
+      </form>
+    </div>
+  </nav>
+  <div style="overflow-x: auto;">
+    <nav aria-label="Report pagination Top">
+      <ul class="pagination">
+        {% if table.has_prev %}
+        <li class="page-item"><a class="page-link" href="/report/{{table.page-1}}">Previous</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+        {% endif %}
+        {% for page in table.iter_pages() %}
+          {% if page %}
+            {% if page != table.page %}
+              <li class="page-item"><a class="page-link" href="/report/{{page}}">{{page}}</a></li>
+            {% else %}
+              <li class="page-item active"><a class="page-link" href="#">{{page}}</a></li>
+            {% endif %}
+          {% else %}
+            <span class="ellipsis">...</span>
+          {% endif %}
+        {% endfor %}
+        {% if table.has_next %}
+        <li class="page-item"><a class="page-link" href="/report/{{table.page+1}}">Next</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+        {% endif %}
+        <div class="dropdown">
+          <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Items per page
+          </button>
+          <ul class="dropdown-menu">
+            {% for i in range(5) %}
+                {% if i == 0 %}
+                <li><a class="dropdown-item" href="/report/1/{{i+1}}">{{i+1}} Item per page</a></li>
+                {% else %}
+                <li><a class="dropdown-item" href="/report/1/{{i+1}}">{{i+1}} Items per page</a></li>
+                {% endif %}
+              {% endfor %}
+          </ul>
+        </div>
+        <li class="page-item"><a class="page-link">Total Items: {{table.total}}</a></li>
+      </ul>
+      <!-- <ul class="pagination">
+        <li class="page-item"><a class="page-link">Total Items: {{table.total}}</a></li>
+      </ul> -->
+    </nav>
+    <table class="table table-striped">
+      <!-- Table Heading -->
+      <thead class="text-center">
+        <tr>
+          <th>Id</th>
+          <th>SHA256</th>
+          <th>Requested By</th>
+          <th>Upload Date</th>        
+          <th>Last Modified Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+      <!-- On Rows -->
+        {% for report in table %}
+        <tr>
+          <td>{{report.id}}</td>
+          <td class="tbltdEllipsis"><a href="/report/view/{{report.id}}">{{report.sha256}}</a></td>
+          <td>{{report.requested_by}}</td>
+          <td>{{report.created_date}}</td>
+          <td>{{report.modified_date}}</td>
+          <td>
+            <a href="/report/ownership/{{report.id}}" class="btn btn-sm btn-primary">Take Ownership</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <nav aria-label="Report pagination Bottom">
+      <ul class="pagination">
+        {% if table.has_prev %}
+        <li class="page-item"><a class="page-link" href="/report/{{table.page-1}}">Previous</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+        {% endif %}
+        {% for page in table.iter_pages() %}
+          {% if page %}
+            {% if page != table.page %}
+              <li class="page-item"><a class="page-link" href="/report/{{page}}">{{page}}</a></li>
+            {% else %}
+              <li class="page-item active"><a class="page-link" href="#">{{page}}</a></li>
+            {% endif %}
+          {% else %}
+            <span class="ellipsis">...</span>
+          {% endif %}
+        {% endfor %}
+        {% if table.has_next %}
+        <li class="page-item"><a class="page-link" href="/report/{{table.page+1}}">Next</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% else %} {# This is for Individual Report #}
+  <form class="container-fluid" method="post" action="/report/save/{{form.id.data}}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3 justify-content-md-center">
+      <div class="container-fluid justify-content-md-center">
+        {% set is_checked = '' %}
+        {% if form.is_published.data %}
+          {% set is_checked = 'checked' %}
+        {% endif %}
+        {% set is_readonly = '' %}
+        {% if action == 'view' or action == 'show' or action == 'download' %}
+        {% set is_readonly = 'disabled' %}
+        {% endif %}
+        <div class="form-check form-switch" style="margin-right: 10px;">
+          <input name="is_published" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" {{is_checked}} {{is_readonly}}>
+          <label class="form-check-label" for="flexSwitchCheckDefault">Is Published?</label>
+        </div>
+        {% if (action == 'edit' or action == 'save') and not read_only %}
+        <button name="save_changes" class="btn btn-outline-success" style="margin-right: 5px;" type="submit">Save Changes</button>
+        {% elif (action == 'view' or action == 'show' or action == 'download') and not read_only %}
+        <a href="/report/edit/{{form.id.data}}" name="edit_report" class="btn btn-outline-success" style="margin-right: 5px;" type="button">Edit Report</a>
+        {% endif %}
+        {% if not read_only %}
+        <a href="/report/view/{{form.id.data}}" target="_blank" rel="noopener noreferrer" name="preview_report" class="btn btn-outline-success" style="margin-right: 5px;" type="button">Preview Report</a>
+        {% endif %}
+        <a href="/report/download/{{form.id.data}}" name="to_pdf" class="btn btn-outline-success" style="margin-right: 5px;" type="button">Save as PDF</a>
+      </div>
+    </nav>
+    {% if (action == 'edit' or action == 'save') %}
+    <div class="mb-3">
+      <div class="centered">
+        <div class="row">
+          <div class="document-editor__toolbar"></div>
+        </div>
+        <div class="row row-editor">
+          <div class="editor-container" style="color: black;">
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">SHA256</span>
+              </div>
+              <input type="text" name="sha256" class="form-control" id="exampleFormControlInput1" placeholder="SHA256" 
+              value="{{form.sha256.data}}" aria-label="title" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">Title</span>
+              </div>
+              <input type="text" name="title" class="form-control" id="exampleFormControlInput1" placeholder="Title" 
+              value="{{form.title.data}}" aria-label="title" aria-describedby="basic-addon1">
+            </div>            
+            <!-- <input name="title" class="form-control" type="hidden" value="{{form.title.data}}"> -->
+            <textarea id="editor" name="content">
+              {{form.content.data}}
+            </textarea>
+          </div>    
+        </div>
+      </div>
+    </div>
+    {% elif (action == 'view' or action == 'show' or action == 'download') %}
+    <div class="input-group mb-2">
+      <div class="input-group-prepend">
+        <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">SHA256</span>
+      </div>
+      <input type="text" name="sha256" class="form-control" id="exampleFormControlInput1" placeholder="SHA256" 
+      value="{{form.sha256.data}}" aria-label="title" aria-describedby="basic-addon1" readonly>
+    </div>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span for="exampleFormControlInput1" class="input-group-text" id="basic-addon1">Title</span>
+      </div>
+      <input type="text" name="title" class="form-control" id="exampleFormControlInput1" placeholder="Title" 
+      value="{{form.title.data}}" aria-label="title" aria-describedby="basic-addon1" readonly>
+    </div>    
+    <div class="ck-content">
+      {{ form.content.data | safe }}
+    </div>
+    {% endif %}
+  </form>
+  {% endif %}
+</div>
+{% endblock %}
