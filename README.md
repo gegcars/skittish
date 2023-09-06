@@ -16,6 +16,7 @@ Install the app
 
 Run the app as a desktop application:  
 `$ export FLASK_APP=skittish FLASK_DEBUG=1`  
+`flask run`  
 
 Creating your custom CKEditor:  
 https://ckeditor.com/ckeditor-5/online-builder/  
