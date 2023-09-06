@@ -391,13 +391,17 @@ def file_post(action, id=None, per_page=0):
 ###          REPORT routes            ###
 #########################################
 @file_blueprint.route('/report', methods=['GET'])
-@file_blueprint.route('/report/search', methods=['POST'])
-@file_blueprint.route('/report/<int:page>/', methods=['GET'])
-@file_blueprint.route('/report/<int:page>/<int:item_per_page>', methods=['GET'])
+# @file_blueprint.route('/report/search', methods=['POST'])
+# @file_blueprint.route('/report/<int:page>/', methods=['GET'])
+# @file_blueprint.route('/report/<int:page>/<int:item_per_page>', methods=['GET'])
+@file_blueprint.route('/report/<regex("requests|publishing|search"):search_method>', methods=['GET', 'POST'])
+@file_blueprint.route('/report/<regex("requests|publishing|search"):search_method>/<int:page>', methods=['GET', 'POST'])
+@file_blueprint.route('/report/<regex("requests|publishing|search"):search_method>/<int:page>/<int:item_per_page>', methods=['GET', 'POST'])
 @login_required
-def report_index(page=None, item_per_page=None):
+def report_index(search_method='requests', page=None, item_per_page=None):
     search_form = SearchForm()
     report_form = ReportForm()
+    
     if 'submitter' in [r.name for r in current_user.roles] and len(current_user.roles) == 1:
         flash('This request is not allowed.', 'error')
         if request.referrer:
@@ -416,8 +420,7 @@ def report_index(page=None, item_per_page=None):
             search_form.search.data = '' 
             session['report_search'] = search_form.search.data
             search_form.item_per_page.data = 5
-            session['report_item_per_page'] = search_form.item_per_page.data
-            
+            session['report_item_per_page'] = search_form.item_per_page.data            
         
         if page == None:
             page = 1
@@ -463,6 +466,7 @@ def report_index(page=None, item_per_page=None):
                            form=search_form,
                            table=reports, 
                            is_table=True,
+                           search_method=search_method,
                            available_services=AVAILABLE_SERVICES,
                            action='show',
                            message=message,
@@ -491,8 +495,6 @@ def report_ownership(id):
 
     return redirect(url_for('file.report', action='edit', id=id))
     
-
-
                       
 @file_blueprint.route('/report/<regex("view|edit|download|search"):action>/<int:id>', methods=['GET'])
 @login_required

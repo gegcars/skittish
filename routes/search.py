@@ -1,3 +1,4 @@
+from flask import request
 from sqlalchemy.orm import load_only
 from ..models import *
 from flask_login import current_user
@@ -82,33 +83,58 @@ def search_files(search_form, page, user_id):
     return results
 
 
-def search_reports(search_form, page):
+def search_reports(search_form, page, search_method):
     results = []
     search_data = search_form.search.data
     service = Service.query.filter_by(name='Report').first()
     if not search_data:
         search_data = 'all'
     if search_data.upper() in ['ALL', '*']:
-        # search for reports that is not owned yet
-        results = Report.query.filter_by(
-            owned_by=None, service_id=service.id
-            ).order_by(Report.created_date.desc()
-                       ).paginate(page=page,
-                                  per_page=search_form.item_per_page.data, 
-                                  error_out=True, 
-                                  max_per_page=5)
+        if search_method == 'requests':
+            # search for reports that is not owned yet
+            results = Report.query.filter_by(
+                owned_by=None, service_id=service.id
+                ).order_by(Report.created_date.desc()
+                        ).paginate(page=page,
+                                    per_page=search_form.item_per_page.data, 
+                                    error_out=True, 
+                                    max_per_page=5)
+        elif search_method == 'publishing':
+            results = Report.query.filter_by(
+                owned_by=current_user.id, service_id=service.id
+                ).order_by(Report.created_date.desc()
+                        ).paginate(page=page,
+                                    per_page=search_form.item_per_page.data, 
+                                    error_out=True, 
+                                    max_per_page=5)
+
     
     else:
-        results = Report.query.filter_by(owned_by=None, service_id=service.id).filter(
-            Report.sha256.ilike("%"+search_data+"%")
-            ).paginate(page=page,
-                       per_page=search_form.item_per_page.data, 
-                       error_out=True, 
-                       max_per_page=5)
+        if search_method == 'requests':
+            results = Report.query.filter_by(owned_by=None, service_id=service.id).filter(
+                Report.sha256.ilike("%"+search_data+"%")
+                ).order_by(Report.created_date.desc()
+                           ).paginate(page=page,
+                                      per_page=search_form.item_per_page.data, 
+                                      error_out=True, 
+                                      max_per_page=5)
+        elif search_method == 'publishing':
+            results = Report.query.filter_by(owned_by=current_user.id, service_id=service.id).filter(
+                Report.sha256.ilike("%"+search_data+"%")
+                ).order_by(Report.created_date.desc()
+                           ).paginate(page=page,
+                                      per_page=search_form.item_per_page.data, 
+                                      error_out=True,
+                                      max_per_page=5)
+
 
     # change Requested By user_id by email address
     for report in results:
-        setattr(report, 'requested_by', User.query.filter_by(id=report.requested_by).first().email) 
+        if search_method == 'requests':
+            setattr(report, 'requested_by', User.query.filter_by(id=report.requested_by).first().email) 
+        elif search_method == 'publishing':
+            setattr(report, 'requested_by', User.query.filter_by(id=report.requested_by).first().email) 
+            setattr(report, 'owned_by', User.query.filter_by(id=report.owned_by).first().email) 
 
     return results
 
@@ -122,6 +148,11 @@ def search(table_name, search_form, page_num=1):
     elif table_name == 'files':
         results = search_files(search_form, page_num, current_user.id)
     elif table_name == 'reports':
-        results = search_reports(search_form, page_num)
+        if request.path.startswith('/report/requests'):
+            results = search_reports(search_form, page_num, 'requests')
+        elif request.path.startswith('/report/publishing'):
+            results = search_reports(search_form, page_num, 'publishing')
+        else:
+            results = search_reports(search_form, page_num, 'requests')
 
     return results

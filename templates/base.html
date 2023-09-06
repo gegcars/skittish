@@ -200,41 +200,47 @@
       <symbol id="tools" viewBox="0 0 16 16">
         <path d="M1 0L0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.356 3.356a1 1 0 0 0 1.414 0l1.586-1.586a1 1 0 0 0 0-1.414l-3.356-3.356a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3c0-.269-.035-.53-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814L1 0zm9.646 10.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708zM3 11l.471.242.529.026.287.445.445.287.026.529L5 13l-.242.471-.026.529-.445.287-.287.445-.529.026L3 15l-.471-.242L2 14.732l-.287-.445L1.268 14l-.026-.529L1 13l.242-.471.026-.529.445-.287.287-.445.529-.026L3 11z"/>
       </symbol>
+      <symbol id="files" viewBox="0 0 16 16">
+        <path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zM3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4z"/>
+      </symbol>
+      <symbol id="flag" viewBox="0 0 16 16">
+        <path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12.435 12.435 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A19.626 19.626 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a19.587 19.587 0 0 0 1.349-.476l.019-.007.004-.002h.001M14 1.221c-.22.078-.48.167-.766.255-.81.252-1.872.523-2.734.523-.886 0-1.592-.286-2.203-.534l-.008-.003C7.662 1.21 7.139 1 6.5 1c-.669 0-1.606.229-2.415.478A21.294 21.294 0 0 0 3 1.845v6.433c.22-.078.48-.167.766-.255C4.576 7.77 5.638 7.5 6.5 7.5c.847 0 1.548.28 2.158.525l.028.01C9.32 8.29 9.86 8.5 10.5 8.5c.668 0 1.606-.229 2.415-.478A21.317 21.317 0 0 0 14 7.655V1.222z"/>
+      </symbol>
     </svg>
     <!----------------->
     <!-- Sidebar Menu -->
     <main class="d-flex nowrap">
-      <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" >
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px;">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none">
           <!-- <svg class="bi pe-none me-1" width="40" height="32"><use xlink:href="#bootstrap"/></svg> -->
           <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#people-circle"/></svg>
           <span class="fs-4">Skittish</span>
         </a>
         <hr>
-        <ul id="menu" class="nav nav-pills flex-column mb-auto">
-          <li class="nav-item align-items-center">
-            <a href="{{url_for('root.index')}}" role="button" class="btn btn-outline-primary text-white" style="--bs-btn-border-color: none">
+        <ul class="list-unstyled ps-0">
+          <li class="mb-1">
+            <a href="{{url_for('root.index')}}" role="button" class="btn btn-outline-primary" style="--bs-btn-border-color: none">
               <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#home"/></svg>
               Home
             </a>
           </li>
           {% if not current_user.is_authenticated %}
-          <li>
-            <a href="{{url_for('login.index')}}" role="button" class="btn btn-outline-primary text-white" style="--bs-btn-border-color: none">
+          <li class="mb-1">
+            <a href="{{url_for('login.index')}}" role="button" class="btn btn-outline-primary" style="--bs-btn-border-color: none">
               <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#people-circle"/></svg>
               Login
             </a>
           </li>
-          <li>
-            <a href="{{url_for('signup.index')}}" role="button" class="btn btn-outline-primary text-white" style="--bs-btn-border-color: none">
+          <li class="mb-1">
+            <a href="{{url_for('signup.index')}}" role="button" class="btn btn-outline-primary" style="--bs-btn-border-color: none">
               <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#chat-quote-fill"/></svg>
               Signup
             </a>
           </li>
           {% else %}
-          <li>
-            <a href="{{url_for('file.index')}}" role="button" class="btn btn-outline-primary text-white" style="--bs-btn-border-color: none">
-              <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#collection"/></svg>
+          <li class="mb-1">
+            <a href="{{url_for('file.index')}}" role="button" class="btn btn-outline-primary" style="--bs-btn-border-color: none">
+              <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#files"/></svg>
               Files Submitted
             </a>
           </li>
@@ -243,11 +249,27 @@
           {% do roles.append(r.name) %}
           {% endfor %}
           {% if 'reporter' in roles or 'admin' in roles %}
-          <li>
-            <a href="{{url_for('file.report_index')}}" role="button" class="btn btn-outline-primary text-white" style="--bs-btn-border-color: none">
-              <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#calendar3"/></svg>
-              Reports To Process
-            </a>
+          <li class="mb-1">
+            <button class="btn btn-toggle btn-primary align-items-center collapsed" 
+            data-bs-toggle="collapse" data-bs-target="#reports-collapse" aria-expanded="true" style="--bs-btn-border-color: none">
+              Reports
+            </button>
+            <div class="collapse show" id="reports-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
+                <li>
+                  <a href="/report/requests" role="button" class="btn btn-outline-primary link" style="--bs-btn-border-color: none">
+                    <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#flag"/></svg>
+                    Requests
+                  </a>
+                </li>
+                <li>
+                  <a href="/report/publishing" role="button" class="btn btn-outline-primary link" style="--bs-btn-border-color: none">
+                    <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#collection"/></svg>
+                    For Publishing
+                  </a>
+                </li>
+              </ul>
+            </div>
           </li>
           {% endif %}
           {% endif %}
@@ -255,7 +277,7 @@
         <hr>
         {% if current_user.is_authenticated %}
         <div class="dropdown">
-          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             <!-- <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-1"> -->
             <svg class="bi pe-none me-1" width="16" height="16"><use xlink:href="#people-circle"/></svg>
             <strong>{{current_user.name}}</strong>

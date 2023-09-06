@@ -45,7 +45,7 @@ def signup_post():
     resp = ('Successfully created the account.', 'message')
     try:
         # add default role (Analyst)
-        r = Role.query.filter_by(name='Analyst').first()
+        r = Role.query.filter_by(name='submitter').first()
         # add the new user to the database
         new_user.roles.append(r)
         db.session.add(new_user)
