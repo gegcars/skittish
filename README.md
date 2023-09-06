@@ -38,8 +38,8 @@ You can also checkout the sample PDF file that can be found in `download` folder
 To write your own service, just go to the `services` folder.
 
 
-Note:<br>
-*This is my attempt on learning MORE about Flask and creating RESTful web service API.
+**Note**:<br>
+*This is my attempt on learning MORE about Flask and creating RESTful web service API.*
 
 <br><br>
 References:<br>
