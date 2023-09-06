@@ -12,6 +12,7 @@ Go to Reports --> For Publishing (for reports that is owned by current user that
 
 # How-To
 Install the app  
+`$ git clone https://github.com/gegcars/skittish`  
 `$ pip install -r requirements.txt`  
 
 Run the app as a desktop application:  
