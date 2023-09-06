@@ -5,7 +5,7 @@ Is a Python Flask application for report creation and storage using the CKEditor
 
 ![Sample Preview](https://github.com/gegcars/skittish/blob/main/report_preview.png?raw=true)
 
-#WorkFlow
+# WorkFlow
 Upload a File to Analyze --> Skittish will create a report template --> Own and start editing the report
 
 # How-To
