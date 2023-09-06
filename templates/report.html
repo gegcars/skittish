@@ -93,7 +93,9 @@
           <th>Owned By</th>
           <th>Upload Date</th>        
           <th>Last Modified Date</th>
+          {% if search_method == 'requests' %}
           <th>Action</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody class="text-center">
@@ -106,13 +108,13 @@
           <td>{{report.owned_by}}</td>
           <td>{{report.created_date}}</td>
           <td>{{report.modified_date}}</td>
+          {% if search_method == 'requests' %}
           <td>
             {% if not report.owned_by %}
             <a href="/report/ownership/{{report.id}}" class="btn btn-sm btn-primary">Take Ownership</a>
-            {% else %}
-
             {% endif %}
           </td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
