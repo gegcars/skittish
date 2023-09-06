@@ -3,6 +3,7 @@
 
 Is a Python Flask application for report creation and storage using the CKEditor Rich Text Editor. This application is for people in cybersecurity who writes their file analysis and export them to PDF. It also uses wkhtmltopdf application that export the created report to PDF.
 
+![Sample Preview](https://github.com/gegcars/skittish/blob/main/report_preview.png?raw=true)
 
 #WorkFlow
 Upload a File to Analyze --> Skittish will create a report template --> Own and start editing the report
@@ -10,6 +11,7 @@ Upload a File to Analyze --> Skittish will create a report template --> Own and 
 # How-To
 Install the app<br>
 `pip install -r requirements.txt`
+
 Run the app as a desktop application:
 `$ export FLASK_APP=skittish FLASK_DEBUG=1`
 
@@ -40,7 +42,7 @@ Note:<br>
 *This is my attempt on learning MORE about Flask and creating RESTful web service API.
 
 <br><br>
-References:
+References:<br>
 https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login
 https://getbootstrap.com/docs/5.3/examples/
 https://mdbootstrap.com/docs/standard/extended/dropdown-multilevel/
