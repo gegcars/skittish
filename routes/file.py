@@ -345,11 +345,11 @@ def file_post(action, id=None, per_page=0):
         else:
             search_form = SearchForm(request.form)
             is_table = True
-            if not search_form.validate():
-                return render_template('file.html', 
-                                    form=search_form, 
-                                    action=action, 
-                                    errors=search_form.errors)
+            # if not search_form.validate():
+            #     return render_template('file.html', 
+            #                         form=search_form, 
+            #                         action=action, 
+            #                         errors=search_form.errors)
             session['file_item_per_page'] = int(search_form.item_per_page.data)
             search_form.item_per_page.data = session['file_item_per_page']
             session['file_search'] = search_form.search.data
